@@ -1,0 +1,39 @@
+import os
+from telegram import Update
+from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+
+# Token API Bot Telegram kamu
+TOKEN = '7523301517:AAHdkdgm90otud-Gbkz3nEKmFrI1TWDJLyo'
+
+def start(update: Update, context: CallbackContext):
+    update.message.reply_text("Halo! Kirimkan link YouTube dan saya akan unduh videonya untukmu.")
+
+def auto_reply(update: Update, context: CallbackContext):
+    text = update.message.text.lower()
+    if 'halo' in text:
+        update.message.reply_text("Halo! Ada yang bisa saya bantu?")
+    elif 'terima kasih' in text:
+        update.message.reply_text("Sama-sama!")
+
+def new_member(update: Update, context: CallbackContext):
+    for member in update.message.new_chat_members:
+        update.message.reply_text(f"Selamat datang, {member.full_name}! Senang bisa bertemu denganmu.")
+
+def left_member(update: Update, context: CallbackContext):
+    for member in update.message.left_chat_member:
+        update.message.reply_text(f"Selamat tinggal, {member.full_name}. Semoga hari-harimu menyenangkan!")
+
+def main():
+    updater = Updater(TOKEN, use_context=True)
+    dp = updater.dispatcher
+
+    dp.add_handler(CommandHandler("start", start))
+    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, auto_reply))
+    dp.add_handler(MessageHandler(Filters.status_update.new_chat_members, new_member))
+    dp.add_handler(MessageHandler(Filters.status_update.left_chat_member, left_member))
+
+    updater.start_polling()
+    updater.idle()
+
+if __name__ == '__main__':
+    main()
